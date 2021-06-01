@@ -2,17 +2,24 @@ import pygame
 import os
 import time
 import random
+from pygame import mixer
+
 pygame.font.init()
 
 #SIZE OF THE GAME WINDOW
-WIDTH, HEIGHT = 800, 800
+WIDTH, HEIGHT = 900, 800
 WIN = pygame.display.set_mode((WIDTH,  HEIGHT))
-pygame.display.set_caption("Space Invaders")
+
+#Title
+pygame.display.set_caption("Space Shooter")
+
 
 #Import Images/ Load  Images
-RED_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "pixel_ship_red_small.png"))
-GREEN_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "pixel_ship_green_small.png"))
-BLUE_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "pixel_ship_blue_small.png"))
+RED_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "alien1.png"))
+GREEN_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "alien2.png"))
+BLUE_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "alien3.png"))
+PINK_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "alien4.png"))
+ORANGE_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "alien5.png"))
 
 #PLAYER/ USER SHIP
 YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("assets1", "pixel_ship_yellow.png"))
@@ -22,9 +29,13 @@ RED_LASER= pygame.image.load(os.path.join("assets1", "pixel_laser_red.png"))
 GREEN_LASER= pygame.image.load(os.path.join("assets1", "pixel_laser_green.png"))
 BLUE_LASER= pygame.image.load(os.path.join("assets1", "pixel_laser_blue.png"))
 YELLOW_LASER= pygame.image.load(os.path.join("assets1", "pixel_laser_yellow.png"))
+PINK_LASER= pygame.image.load(os.path.join("assets1", "pixel_laser_pink.png"))
+ORANGE_LASER= pygame.image.load(os.path.join("assets1", "pixel_laser_orange.png"))
+
 
 #BACKGROUND
 BG = pygame.transform.scale(pygame.image.load(os.path.join("assets1", "background-black.png")), (WIDTH,HEIGHT))
+
 
 #creating laser object
 class Laser:
@@ -48,7 +59,7 @@ class Laser:
 
 #DEFINING THE ATTRIBUTES OF THE SHIPS
 class Ship:
-    COOLDOWN = 30
+    COOLDOWN = 20
 
     def __init__(self, x, y, health=100):
         self.x = x
@@ -110,7 +121,7 @@ class Player(Ship):
                 for obj in objs:
                     if laser.collision(obj):
                         objs.remove(obj)
-                        if  laser.off_screen(HEIGHT):
+                        if laser.off_screen(HEIGHT):
                             self.lasers.remove(laser)
 
     def draw(self, window):
@@ -125,7 +136,9 @@ class Enemy(Ship):
     COLOR_MAP = {
                 "red": (RED_SPACE_SHIP, RED_LASER),
                 "green": (GREEN_SPACE_SHIP, GREEN_LASER),
-                "blue": (BLUE_SPACE_SHIP, BLUE_LASER)
+                "blue": (BLUE_SPACE_SHIP, BLUE_LASER),
+                "pink": (PINK_SPACE_SHIP, PINK_LASER),
+                "orange": (ORANGE_SPACE_SHIP, ORANGE_LASER)
                 }
 
     def __init__(self, x, y, color, health=100):
@@ -154,16 +167,16 @@ def main():
     run = True
     FPS = 60
     level = 0
-    lives = 5
+    lives = 6
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 70)
 
     enemies = []
-    wave_length = 5
+    wave_length = 8
     enemy_vel = 1
 
-    player_vel = 5 # movement speed of player
-    laser_vel = 5 #  movement speed of laser
+    player_vel = 6 # movement speed of player
+    laser_vel = 20 #  movement speed of laser
 
     player = Player(300, 630)
 
@@ -188,7 +201,7 @@ def main():
         player.draw(WIN)
 
         if lost:
-            lost_label = lost_font.render("You Lost!!", 1, (255,250,250))
+            lost_label = lost_font.render("You Died!!", 1, (255,250,250))
             WIN.blit(lost_label, (WIDTH/2 -lost_label.get_width()/2, 350))
 
         pygame.display.update()
@@ -212,7 +225,7 @@ def main():
             level += 1
             wave_length += 5
             for i in range(wave_length):
-                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green"]))
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green", "pink", "orange"]))
                 enemies.append(enemy)
 
         for event in pygame.event.get():
